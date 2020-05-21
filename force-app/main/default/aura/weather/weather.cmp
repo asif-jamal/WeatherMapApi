@@ -1,0 +1,169 @@
+<aura:component controller="Weather_Cntrl" implements="forceCommunity:availableForAllPageTypes,force:appHostable" access="global">
+    
+    <aura:attribute name="cityname" type="String" access="public" />
+    <aura:attribute name="ForCaseList" type="List" access="public" />
+    <aura:attribute name="weatherData" type="string"  access="public" />
+    <aura:attribute name="iconId" type="String" access="public" />
+    <aura:attribute name="flag" type="Boolean" default="false" access="public" />
+    <aura:attribute name="imagelink1" type="String"  default="http://openweathermap.org/img/wn/" />
+    <aura:attribute name="imagelink2" type="String"  default="@2x.png" />
+    
+    
+    
+    <div class="slds-box">
+        
+        <div class="slds-p-around_small" >
+            <div class="slds-text-heading_large">OpenWeatherMap Api</div>
+            <lightning:input type="String" name="Cityname" label="Enter city nname"  value="{!v.cityname}"/> 
+            <lightning:button label="search weather" onclick="{!c.myAction}"/>
+            <br/>
+            
+        </div>
+        
+    </div>
+    <aura:if isTrue="{!v.flag}">
+        
+        <lightning:tabset selectedTabId="one">
+            <lightning:tab label="Main" id="one">
+                <article class="slds-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <span class="slds-assistive-text">{!v.weatherData.name}&nbsp;( {!v.weatherData.sys.country}) $nbsp; , {!v.weatherData.weather[0].main} </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span>{!v.weatherData.name}&nbsp;({!v.weatherData.sys.country}) , {!v.weatherData.weather[0].main}</span>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <p class="slds-text-heading_medium"><img src="{!v.iconId}" /> <b>{!v.weatherData.main.temp}°C</b></p>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                            <thead>
+                                <tr >
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Properties">Properties</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Values">Values</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Properties">
+                                        wind
+                                    </td>
+                                    <td data-label="Values">
+                                        {!v.weatherData.wind.speed} m/s.
+                                    </td>
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Properties">
+                                        Cloude
+                                    </td>
+                                    <td data-label="Values">
+                                        {!v.weatherData.clouds.all} %
+                                    </td>
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Properties">
+                                        Pressure
+                                    </td>
+                                    <td data-label="Values">
+                                        {!v.weatherData.main.pressure} hpa
+                                    </td>
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Properties">
+                                        Humidity 
+                                    </td>
+                                    <td data-label="Values">
+                                        {!v.weatherData.main.humidity} %
+                                    </td>
+                                </tr>
+                                
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </article> 
+            </lightning:tab>
+            <lightning:tab label="Daily" id="two">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="12">
+                        <div class="page-section page-header">
+                            <h2><b>OpenWeather Daily Data</b></h2>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="12">
+                        <lightning:layout multipleRows="true">
+                            <aura:iteration items="{!v.ForCaseList}" var="item">                             
+                                <lightning:layoutItem padding="around-small" size="2">
+                                    
+                                    <lightning:card  title="{!item.dt_txt}">
+                                        
+                                        <p class="slds-p-horizontal_small">
+                                            
+                                            <img src="{!v.imagelink1+item.weather[0].icon+v.imagelink2}" /><b>{!item.main.temp}°C</b><br/><br/>
+                                            
+                                            wind  {!item.wind.speed} m/s.<br/>
+                                            
+                                            Cloude  {!item.clouds.all} %<br/>
+                                            
+                                            Pressure   {!item.main.pressure} hpa<br/>
+                                            
+                                            Humidity   {!item.main.humidity} %
+                                            
+                                        </p>
+                                    </lightning:card>
+                                </lightning:layoutItem>
+                            </aura:iteration>  
+                        </lightning:layout>
+                    </lightning:layoutItem>
+                </lightning:layout>
+                
+            </lightning:tab>
+            <lightning:tab label="Hourly" id="three">
+                
+                
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="12">
+                        <div class="page-section page-header">
+                            <h2><b>OpenWeather Hourly Data</b></h2>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="12">
+                        <lightning:layout multipleRows="true">
+                            <aura:iteration items="{!v.ForCaseList}" var="item">                             
+                                <lightning:layoutItem padding="around-small" size="2">
+                                    
+                                    <lightning:card  title="{!item.dt_txt}">
+                                        
+                                        <p class="slds-p-horizontal_small">
+                                            
+                                            <img src="{!v.imagelink1+item.weather[0].icon+v.imagelink2}" /><b>{!item.main.temp}°C</b><br/><br/>
+                                            
+                                            wind  {!item.wind.speed} m/s.<br/>
+                                            
+                                            Cloude  {!item.clouds.all} %<br/>
+                                            
+                                            Pressure   {!item.main.pressure} hpa<br/>
+                                            
+                                            Humidity   {!item.main.humidity} %
+                                            
+                                        </p>
+                                    </lightning:card>
+                                </lightning:layoutItem>
+                            </aura:iteration>  
+                            
+                        </lightning:layout>
+                    </lightning:layoutItem>
+                </lightning:layout>
+                
+            </lightning:tab>
+        </lightning:tabset>
+    </aura:if>        
+</aura:component>
